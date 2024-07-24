@@ -1,0 +1,45 @@
+.main{
+  background-color: lavenderblush;
+  position: absolute;
+  margin:5%;
+  left:25%;
+  width:40%;
+}
+.smain{
+  background-color: white;
+  
+}
+.register{
+  text-align: center;
+}
+.field{
+  display: flex;
+  align-items: center;
+}
+.content{
+  text-align: center;
+  justify-content: center;
+}
+.img{
+  margin-right:30cm;
+}
+.main1{
+  background-color: rgb(203, 239, 239);
+}
+.nav{
+  margin-left:  42%;
+}
+.radio{
+  margin-right: 6cm;
+}
+.reg{
+
+  background-color: lavenderblush;
+  position: absolute;
+  margin:5%;
+  left:25%;
+  width:40%;
+}
+.homeimg{
+  background-color:white;
+}
