@@ -25,12 +25,12 @@ function Login() {
   const Submit = (e) => {
     console.log(e)
     e.preventDefault()
-    axios.post("http://localhost:4002/custlogin", values)
+    axios.post("http://localhost:4003/custlogin", values)
       .then((a) => {
         if (a.data.status === 200) {
-          // alert("Login Sucessull")
+          alert("Login Successull")
           Navigate("/CustHome")
-          localStorage.setItem("userid", a.data.data._id)        //storing data to local storage
+          // localStorage.setItem("userid", a.data.data._id)      //storing data to local storage
         }
         console.log(a)
       })
@@ -48,7 +48,7 @@ function Login() {
         <div className='main1'>
           <Navbar bg="dark" data-bs-theme="dark">
             <Container>
-              <Navbar.Brand href="#fashionstore">Fashion Store</Navbar.Brand>
+              <Navbar.Brand >Fashion Store</Navbar.Brand>
               <div class="nav">
                 <Nav className="me-auto">
                   <Nav.Link href="#home"><Link class="btn btn-outline-light" aria-current="page" to='/'>Home</Link></Nav.Link>

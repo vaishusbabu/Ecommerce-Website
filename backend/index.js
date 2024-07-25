@@ -1,29 +1,24 @@
-const express = require('express');
-const app = express();
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const multer = require('multer');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const express = require('express')
+const cors = require('cors')
+const router = require("./routes")
+const app = express()
+
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(express.static(`${__dirname}/upload`));
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}))
+app.use(bodyParser.urlencoded({ extended: false }))
+
+app.use("/", router)
 
 
-app.use(bodyParser.json());
-app.use(cors());
+const db = require('./dbconnection')
 
-
-const mongoURI = 'mongodb+srv://vaishusbabu:Qwerty%40123@cluster0.0jyfdki.mongodb.net/mydatabase?retryWrites=true&w=majority';
-// const mongoURI='mongodb://localhost:27017'
-
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch((err) => {
-  console.log('Error connecting to MongoDB:', err);
-});
-
-
-app.listen(4002, () => {
-  console.log('Server started on port 4002');
-});
+app.listen(4003, () => {
+  console.log("server started")
+})

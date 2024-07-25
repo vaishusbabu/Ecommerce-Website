@@ -24,11 +24,11 @@ function Register() {
         console.log(e)
         e.preventDefault()
         console.log(values)
-        axios.post("http://localhost:4002/insertdata", values)
+        axios.post("http://localhost:4003/insertdata", values)
             .then((a) => {
                 if (a.status === 200) {
                     alert("Registered Sucessfully")
-                    Navigate("/Home")
+                    Navigate("/")
                 }
                 console.log(a)
             })
