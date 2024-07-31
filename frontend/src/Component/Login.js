@@ -30,7 +30,7 @@ function Login() {
         if (a.data.status === 200) {
           alert("Login Successull")
           Navigate("/CustHome")
-          // localStorage.setItem("userid", a.data.data._id)      //storing data to local storage
+          localStorage.setItem("userid", a.data.data._id)      //storing data to local storage
         }
         console.log(a)
       })

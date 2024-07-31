@@ -26,12 +26,10 @@ function ViewCust() {
         console.log(e)
       })
   }, [])
-
-
   const Submit = (id) => {
     setValues(prevArray => prevArray.filter(item => item._id !== id));
     console.log(values)
-    axios.post(`http://localhost:4003/delcust/${id}`, values)
+    axios.post(`http://localhost:4003/delete/${id}`, values)
       .then((a) => {
         alert("Deleted Sucessfully")
       })

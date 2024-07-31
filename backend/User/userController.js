@@ -30,7 +30,7 @@ const adduser = (req, res) => {
     } catch (error) {
         console.log("Error: ", error);
     }
-}
+};
 const login = async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -105,5 +105,4 @@ const delcust = (req, res) => {
             })
         })
 };
-
 module.exports = { adduser, login, viewcust, delcust } 

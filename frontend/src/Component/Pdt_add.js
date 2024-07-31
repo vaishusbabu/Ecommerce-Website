@@ -52,7 +52,6 @@ function Pdt_add() {
       <div className='smain'>
         <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" class="img" ></img>
 
-
         <div className='main1'>
           <Navbar bg="dark" data-bs-theme="dark">
             <Container>
