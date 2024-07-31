@@ -24,11 +24,15 @@ function Cart_list() {
         totalamount: 0, // Initially setting it to 0
     });
 
-    const Change = (e) => {
-        setOrders({
-            ...order,
-            [e.target.name]: e.target.value,
-        });
+    // Function to handle item removal
+    const removeFromCart = async (pdtid) => {
+        try {
+            await axios.delete(`http://localhost:4003/removeFromCart/${id}/${pdtid}`);
+            // Update the cart after removal
+            setValues(values.filter(item => item.pdtid._id !== pdtid));
+        } catch (error) {
+            console.error("Error removing item from cart", error);
+        }
     };
 
     useEffect(() => {
@@ -60,13 +64,13 @@ function Cart_list() {
                     <Navbar bg="dark" data-bs-theme="dark">
                         <Container>
                             <Navbar.Brand href="#fashionstore">Fashion Store</Navbar.Brand>
-                            <div class="nav">
+                            <div className="nav">
                                 <Nav className="me-auto">
-                                    <Nav.Link href="#home"><Link class="btn btn-outline-light" aria-current="page" to='/CustHome'>Home</Link></Nav.Link>
-                                    <Nav.Link href="#Regiter"><Link class="btn btn-outline-light" aria-current="page" to='/Cust_all_pdt'>Collections</Link></Nav.Link>
-                                    <Nav.Link href="#Login"><Link class="btn btn-outline-light" aria-current="page" to='/Cart_list'>CartList</Link></Nav.Link>
-                                    <Nav.Link href="#about"><Link class="btn btn-outline-light" aria-current="page" to='/Orderlist' >My Bag</Link></Nav.Link>
-                                    <Nav.Link href="#logout"><Link class="btn btn-outline-light" aria-current="page" to="/Home">Logout</Link></Nav.Link>
+                                    <Nav.Link href="#home"><Link className="btn btn-outline-light" aria-current="page" to='/CustHome'>Home</Link></Nav.Link>
+                                    <Nav.Link href="#Regiter"><Link className="btn btn-outline-light" aria-current="page" to='/Cust_all_pdt'>Collections</Link></Nav.Link>
+                                    <Nav.Link href="#Login"><Link className="btn btn-outline-light" aria-current="page" to='/Cart_list'>CartList</Link></Nav.Link>
+                                    <Nav.Link href="#about"><Link className="btn btn-outline-light" aria-current="page" to='/Orderlist' >My Bag</Link></Nav.Link>
+                                    <Nav.Link href="#logout"><Link className="btn btn-outline-light" aria-current="page" to="/Home">Logout</Link></Nav.Link>
                                 </Nav>
                             </div>
                         </Container>
@@ -78,25 +82,35 @@ function Cart_list() {
                 <h1> Cart List</h1><hr />
                 {
                     Array.isArray(values) && values.length > 0 ? (
-                        values.map((e) => {
+                        values.map((e, key) => {
                             const imageName = e.pdtid.img.split('/').pop();
                             const newImageUrl = `http://localhost:4003/${imageName}`;
                             return (
-                                <div class="card">
-                                    <div class="card" style={{ width: "18rem", margin: "25px" }}>
-                                        <div class="card-body">
-                                            <img src={newImageUrl} width={200} /><br /><br />
-                                            <label>Product Name :</label>
-                                            {e.pdtid.pdtname}<br />
-                                            <label> Quantity :</label>
-                                            <input type="number" name="quantity" value={order.quantity} onChange={(e) => { setOrders({ ...order, [e.target.name]: e.target.value, totalamount: e.target.value * values.price + ship }) }} /><br />
-                                            <label>Price :</label>
-                                            {e.pdtid.price}<br />
-                                            <label>   Total amount :</label>
-                                            {order.quantity * e.pdtid.price}<br />
-                                            <button type="button" class="btn btn-dark">Remove Cart</button>
-                                            <hr />
-                                        </div> </div>
+                                <div key={key} className="card" style={{ width: "18rem", margin: "25px" }}>
+                                    <div className="card-body">
+                                        <img src={newImageUrl} width={200} /><br /><br />
+                                        <label>Product Name :</label>
+                                        {e.pdtid.pdtname}<br />
+                                        <label> Quantity :</label>
+                                        <input type="number" name="quantity" value={order.quantity} onChange={(e) => {
+                                            setOrders({
+                                                ...order,
+                                                [e.target.name]: e.target.value,
+                                                totalamount: e.target.value * values.price + ship
+                                            })
+                                        }} />
+
+                                        <label>Price :</label>
+                                        {e.pdtid.price}<br />
+                                        <label>   Total amount :</label>
+                                        {order.quantity * e.pdtid.price}<br />
+                                        <button type="button"
+                                            className="btn btn-dark"
+                                            onClick={() => removeFromCart(e.pdtid._id)}>
+                                            Remove from cart
+                                        </button>
+                                        <hr />
+                                    </div>
                                 </div>
                             )
                         })
@@ -104,10 +118,10 @@ function Cart_list() {
                         <p>No items in the cart</p>
                     )
                 }
-                <button type="Submit" class="btn btn-dark"><Link to='/Order'>Buy Now</Link></button>
+                <button type="Submit" className="btn btn-dark"><Link to='/Order'>Buy Now</Link></button>
             </div>
-        </div >
-    )
+        </div>
+    );
 }
 
 export default Cart_list;

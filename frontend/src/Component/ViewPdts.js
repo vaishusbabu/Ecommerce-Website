@@ -63,8 +63,8 @@ function View_pdt() {
         {
           values.map((e, key) => {
 
-            const imageName = e.img.split('/').pop();
-            const newImageUrl = `http://localhost:4003/${imageName}`;
+            // const imageName = e.img.split('/').pop();
+            // const newImageUrl = `http://localhost:4003/${imageName}`;
 
             return (
               <div className="col-4" key={key}>
@@ -73,7 +73,7 @@ function View_pdt() {
                     <h5 className="card-title" style={{ color: "darkblue" }}>{e.pdtname}</h5>
                     <label>Quantity :</label> {e.quantity}<br />
                     <label>Price :</label> {e.price}<br />
-                    <img src={newImageUrl} alt={e.pdtname} width={200}/><br /><br />
+                    {/* <img src={newImageUrl} alt={e.pdtname} width={200} /><br /><br /> */}
                     <Button variant='outline-danger' onClick={() => dltpdt(e._id)} >Delete</Button>
                     <Link to={`/Edit/${e._id}`}><Button variant='outline-warning' className='Submit'>Edit</Button></Link>
                     <hr />

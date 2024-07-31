@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
+import logo from "../Lush.png";
 
 function Register() {
     const Navigate = useNavigate()
@@ -42,7 +43,7 @@ function Register() {
         <div>
 
             <div className='smain'>
-                <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" class="img" ></img>
+                <img src={logo} height="135" class="img" ></img>
 
                 <div className='main1'>
                     <Navbar bg="dark" data-bs-theme="dark">
@@ -61,64 +62,72 @@ function Register() {
                     <br />
                 </div>
 
-                <div className='reg'>
-                    <Form onSubmit={Submit} >
-                        <br></br>
-                        <h3 style={{ textAlign: 'center' }}>Registration Form</h3>
-                        <hr></hr>
-                        <div className='forms'>
-                            <Form.Group className="mb-3 field" style={{ display: "flex", alignItems: "center" }} controlId="formGroupEmail">
-
-                                <Form.Label style={{ width: "130px" }}>First Name :</Form.Label>
-                                <Form.Control type="text" placeholder="Enter first name" onChange={Change} name="firstname" />
-                            </Form.Group>
-                            <Form.Group className="mb-3 field" controlId="formGroupPassword">
-                                <Form.Label style={{ width: "130px" }}>Last Name :</Form.Label>
-                                <Form.Control type="text" placeholder="Enter last name" onChange={Change} name="lastname" />
-
-                            </Form.Group>
-
-                            <Form className="mb-3 field">
-                                <Form.Label style={{ width: "130px" }}>Gender :</Form.Label>
-                                {['radio'].map((type) => (
-                                    <div key={`inline-${type}`} className="mb-3 field">
-                                        <Form.Check
-                                            inline
-                                            label="Female"
-
-                                            name="group1"
-                                            type={type}
-                                            id={`inline-${type}-1`}
-                                        />
-                                        <Form.Check
-                                            inline
-                                            label="Male"
-                                            name="group1"
-                                            type={type}
-                                            id={`inline-${type}-2`}
-                                        />
-                                    </div>
-                                ))}
-                            </Form>
-
-                            <Form.Group className="mb-3 field" controlId="formGroupEmail">
-                                <Form.Label style={{ width: "130px" }}>Email :</Form.Label>
-                                <Form.Control type="email" placeholder="Enter your email" onChange={Change} name="email" />
-                            </Form.Group>
-                            <Form.Group className="mb-3 field" controlId="formGroupPassword">
-                                <Form.Label style={{ width: "130px" }}>Password :</Form.Label>
-                                <Form.Control type="password" placeholder="Enter your Password" onChange={Change} name="password" />
-                            </Form.Group>
-                            <div className='register'>
-                                <Button variant="dark" type='Submit'>Submit</Button>
-                            </div>
-
-
+                <div className='container' >
+                    <div className='row'>
+                        <div className='col-sm-12 col-md-6 col-lg-4'>
+                            <img src='https://images.pexels.com/photos/1927227/pexels-photo-1927227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' style={{ marginLeft: '1', width: '100%' }}></img>
                         </div>
-                    </Form>
-                </div>
-            </div >
+                        <div className='col-sm-12 col-md-6 col-lg-8' >
+                            <Form onSubmit={Submit} >
+                                <br></br>
+                                <h3 style={{ textAlign: 'center' }}>Registration Form</h3>
+                                <hr></hr>
+                                <div className='forms'>
+                                    <Form.Group className="mb-3 field" style={{ display: "flex", alignItems: "center" }} controlId="formGroupEmail">
+
+                                        <Form.Label style={{ width: "130px" }}>First Name :</Form.Label>
+                                        <Form.Control type="text" placeholder="Enter first name" onChange={Change} name="firstname" />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3 field" controlId="formGroupPassword">
+                                        <Form.Label style={{ width: "130px" }}>Last Name :</Form.Label>
+                                        <Form.Control type="text" placeholder="Enter last name" onChange={Change} name="lastname" />
+
+                                    </Form.Group>
+
+                                    <Form className="mb-3 field">
+                                        <Form.Label style={{ width: "130px" }}>Gender :</Form.Label>
+                                        {['radio'].map((type) => (
+                                            <div key={`inline-${type}`} className="mb-3 field">
+                                                <Form.Check
+                                                    inline
+                                                    label="Female"
+
+                                                    name="group1"
+                                                    type={type}
+                                                    id={`inline-${type}-1`}
+                                                />
+                                                <Form.Check
+                                                    inline
+                                                    label="Male"
+                                                    name="group1"
+                                                    type={type}
+                                                    id={`inline-${type}-2`}
+                                                />
+                                            </div>
+                                        ))}
+                                    </Form>
+
+                                    <Form.Group className="mb-3 field" controlId="formGroupEmail">
+                                        <Form.Label style={{ width: "130px" }}>Email :</Form.Label>
+                                        <Form.Control type="email" placeholder="Enter your email" onChange={Change} name="email" />
+                                    </Form.Group>
+                                    <Form.Group className="mb-3 field" controlId="formGroupPassword">
+                                        <Form.Label style={{ width: "130px" }}>Password :</Form.Label>
+                                        <Form.Control type="password" placeholder="Enter your Password" onChange={Change} name="password" />
+                                    </Form.Group>
+                                    <div className='register'>
+                                        <Button variant="dark" type='Submit'>Submit</Button>
+                                    </div>
+
+
+                                </div>
+                            </Form>
+                        </div>
+                    </div >
+                </div >
+            </div>
         </div >
+
     )
 }
 

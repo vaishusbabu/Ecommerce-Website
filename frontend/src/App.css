@@ -1,5 +1,5 @@
 .main{
-  background-color: lavenderblush;
+  background-color: rgb(255, 255, 255);
   position: absolute;
   margin:5%;
   left:25%;
@@ -24,7 +24,7 @@
   margin-right:30cm;
 }
 .main1{
-  background-color: rgb(203, 239, 239);
+  background-color: rgb(255, 255, 255);
 }
 .nav{
   margin-left:  42%;
@@ -33,7 +33,7 @@
   margin-right: 6cm;
 }
 .reg{
-  background-color: lavenderblush;
+  background-color: rgb(255, 255, 255);
   position: absolute;
   margin:5%;
   left:25%;
@@ -41,4 +41,6 @@
 }
 .homeimg{
   background-color:white;
+  margin-left: 0%;
+
 }

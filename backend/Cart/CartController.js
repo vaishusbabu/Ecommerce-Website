@@ -68,4 +68,32 @@ const viewcart = (req, res) => {
         });
 };
 
-module.exports = { cartlist, viewcart }
+const removeFromCart = async (req, res) => {
+    try {
+        const { custid, pdtid } = req.params;
+
+
+        const result = await Cart.deleteOne({ custid: custid, pdtid: pdtid });
+
+        if (result.deletedCount > 0) {
+            res.json({
+                status: 200,
+                msg: "Item removed from cart"
+            });
+        } else {
+            res.json({
+                status: 404,
+                msg: "Item not found in cart"
+            });
+        }
+    } catch (error) {
+        console.error("Error removing item from cart", error);
+        res.json({
+            status: 500,
+            msg: "Error",
+            data: error
+        });
+    }
+};
+
+module.exports = { cartlist, viewcart, removeFromCart }

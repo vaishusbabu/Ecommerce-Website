@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }).single('img');
+const upload = multer({ storage: storage }).array('img', 10);
 
 const addpdt = (req, res) => {
     upload(req, res, function (err) {
@@ -21,13 +21,13 @@ const addpdt = (req, res) => {
         }
 
         const { pdtname, quantity, price } = req.body;
-        const img = req.file ? req.file.path : null;
+        const imgs = req.files ? req.files.map(file => file.path) : [];
 
         let newpdt = new Product({
             pdtname: pdtname,
             quantity: quantity,
             price: price,
-            img: img
+            img: imgs
         });
 
         newpdt.save()
@@ -49,7 +49,6 @@ const addpdt = (req, res) => {
             });
     });
 };
-
 const allpdt = (req, res) => {
     Product.find({
 
@@ -127,28 +126,28 @@ const editpdt = (req, res) => {
             })
         })
 }
-const idfetch= (req,res)=>{
+const idfetch = (req, res) => {
     Product.findById({
-    _id:req.params.id
+        _id: req.params.id
     })
-    .exec()
-    .then(data=>{
-        console.log("Data Fetched Succesfully")
-        res.json({
-            status:200,
-            msg:"Saved Succesfully",
-            data:data
+        .exec()
+        .then(data => {
+            console.log("Data Fetched Succesfully")
+            res.json({
+                status: 200,
+                msg: "Saved Succesfully",
+                data: data
+            })
         })
-    })
-    .catch(error=>{
-        console.log("Error Occured")
-        res.json({
-            status:500,
-            msg:"Error",
-            data:error
+        .catch(error => {
+            console.log("Error Occured")
+            res.json({
+                status: 500,
+                msg: "Error",
+                data: error
+            })
         })
-    })
-    
+
 
 }
-module.exports = { addpdt, allpdt, dltpdt, editpdt ,idfetch};
+module.exports = { addpdt, allpdt, dltpdt, editpdt, idfetch };

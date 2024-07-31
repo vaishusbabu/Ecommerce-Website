@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
 import React, { useState } from 'react';
+import logo from "../Lush.png";
 
 function Login() {
   const Navigate = useNavigate()
@@ -43,7 +44,7 @@ function Login() {
   return (
     <div>
       <div className='smain'>
-        <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" class="img" ></img>
+        <img src={logo} height="135" class="img" ></img>
 
         <div className='main1'>
           <Navbar bg="dark" data-bs-theme="dark">
@@ -62,25 +63,32 @@ function Login() {
           <br />
         </div>
       </div>
-      <div className='main'>
-        <Form onSubmit={Submit} >
-          <br></br>
-          <h3 style={{ textAlign: 'center' }}> Log In</h3>
-          <hr></hr>
-          <br></br>
-          <Form.Group className="mb-3 field" controlId="formGroupEmail"  >
-            <Form.Label style={{ width: "130px" }}>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" onChange={Change} name="email" />
-          </Form.Group>
-          <Form.Group className="mb-3 field" controlId="formGroupPassword">
-            <Form.Label style={{ width: "130px" }}>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" onChange={Change} name="password" />
-            <br></br>
-          </Form.Group>
-          <div className='register'>
-            <Button variant="dark" className='submit' type="Submit">LOGIN</Button>
+      <div className='container' >
+        <div className='row'>
+          <div className='col-sm-12 col-md-6 col-lg-4'>
+            <img src='https://images.pexels.com/photos/3392718/pexels-photo-3392718.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' style={{ marginLeft: '1', width: '100%' }}></img>
           </div>
-        </Form>
+          <div className='col-sm-12 col-md-6 col-lg-8' >
+            <Form onSubmit={Submit} >
+              <br></br>
+              <h3 style={{ textAlign: 'center' }}> Log In</h3>
+              <hr></hr>
+              <br></br>
+              <Form.Group className="mb-3 field" controlId="formGroupEmail"  >
+                <Form.Label style={{ width: "130px" }}>Email address</Form.Label>
+                <Form.Control type="email" placeholder="Enter email" onChange={Change} name="email" />
+              </Form.Group>
+              <Form.Group className="mb-3 field" controlId="formGroupPassword">
+                <Form.Label style={{ width: "130px" }}>Password</Form.Label>
+                <Form.Control type="password" placeholder="Password" onChange={Change} name="password" />
+                <br></br>
+              </Form.Group>
+              <div className='register'>
+                <Button variant="dark" className='submit' type="Submit">LOGIN</Button>
+              </div>
+            </Form>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 const express = require('express');
 const { adduser, login, viewcust, delcust } = require('./User/userController');
 const { addpdt, allpdt, dltpdt, editpdt, idfetch } = require('./Pdt/PdtController');
-const { cartlist, viewcart } = require('./Cart/CartController');
+const { cartlist, viewcart, removeFromCart } = require('./Cart/CartController');
 const { orderlist, ordpdt } = require('./Order/OrderController')
 const router = express()
 
@@ -21,6 +21,7 @@ router.post('/idfetch/:id', idfetch)
 //cart
 router.post('/cartlist/:id', cartlist)
 router.post('/viewcart/:id', viewcart)
+router.delete('/removefromcart/:custid/:pdtid', removeFromCart);
 
 //order
 router.post('/orderlist/:id', orderlist)
