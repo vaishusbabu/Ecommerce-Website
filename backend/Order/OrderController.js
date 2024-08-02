@@ -1,93 +1,126 @@
-const Order = require('./OrderSchema')
+const Order = require('./OrderSchema');
+const Product = require('../Pdt/PdtSchema');
 
 const orderlist = (req, res) => {
+    const {
+        pdtid,
+        deliverydate,
+        paymenttype,
+        paymentstatus,
+        shippingaddress,
+        quantity,
+        totalamount
+    } = req.body;
 
-    let custid = req.params.id
-    let pdtid = req.body.pdtid
-    let date = new Date()
-    let deliverydate = req.body.deliverydate
-    let paymenttype = req.body.paymenttype
-    let paymentstatus = req.body.paymentstatus
-    let shippingaddress = req.body.shippingaddress
-    let quantity = req.body.quantity
-    let totalamount = req.body.totalamount
+    const neworder = new Order({
+        custid: req.params.id,
+        pdtid,
+        date: new Date(),
+        deliverydate,
+        paymenttype,
+        paymentstatus,
+        shippingaddress,
+        quantity,
+        totalamount
+    });
 
-    let neworder = new Order({
-        custid: custid,
-        pdtid: pdtid,
-        date: date,
-        deliverydate: deliverydate,
-        paymenttype: paymenttype,
-        paymentstatus: paymentstatus,
-        shippingaddress: shippingaddress,
-        quantity: quantity,
-        totalamount: totalamount
-    })
     neworder.save()
         .then(data => {
-            console.log("Ordered Succesfully")
-            res.json({
-                status: 200,
-                msg: "Orderder Succesfully",
-                data: data
-            })
+            console.log("Ordered Successfully");
+            res.status(200).json({
+                msg: "Order placed successfully",
+                data
+            });
         })
         .catch(error => {
-            console.log(error);
-            console.log("Error Occured")
-            res.json({
-                status: 500,
-                msg: "Error Occured",
-                data: error
-            })
-        })
-}
+            console.error("Error occurred", error);
+            res.status(500).json({
+                msg: "Error occurred",
+                error
+            });
+        });
+};
+
+
 const ordpdt = async (req, res) => {
-    let flag = 0
-    let date = new Date()
-    let data1 = []
-    let data2 = []
-    await Order.find({
-        custid: req.params.id
-    })
-        .populate('pdtid')
+    try {
+        const orders = await Order.find({ custid: req.params.id }).populate('pdtid').exec();
+        const data1 = [], data2 = [];
 
+        orders.forEach(order => {
+            const isLate = (order.deliverydate.getMonth() < order.date.getMonth()) ||
+                (order.deliverydate.getMonth() === order.date.getMonth() && order.deliverydate.getDate() < order.date.getDate() - 2);
+            (isLate ? data1 : data2).push(order);
+        });
+
+        res.status(200).json({
+            message: "Data fetched successfully",
+            data1,
+            data2
+        });
+    } catch (error) {
+        console.error("Error fetching data", error);
+        res.status(500).json({ message: "Error fetching data" });
+    }
+};
+
+const orders = (req, res) => {
+    Order.find({}).exec()
+        .then(data => res.status(200).json({ msg: "Data Fetched Successfully", data }))
+        .catch(error => {
+            console.error("Error occurred", error);
+            res.status(500).json({ msg: "No Data", error });
+        });
+};
+
+const ord = (req, res) => {
+    Order.find({})
+        .populate("pdtid")
+        .populate("custid")
         .exec()
-        .then(data => {
-            data.map(x => {
-                console.log(" del year", x.deliverydate.getFullYear(), "month :", x.deliverydate.getMonth(), "date :", x.deliverydate.getDate());
-                console.log("year", x.date.getFullYear(), "month :", x.date.getMonth(), "date :", x.date.getDate());
-                if (x.deliverydate.getMonth() < x.date.getMonth()) {
-                    flag = 1
-                }
-                else if (x.deliverydate.getMonth() == x.date.getMonth() && x.deliverydate.getDate() < x.deliverydate.getDate() - 2) {
-                    flag = 1
-                }
-                if (flag == 1) {
-                    data1.push(x)
-                }
-                else {
-                    data2.push(x)
-                }
+        .then(data => res.status(200).json({ msg: "Order Success", data }))
+        .catch(error => {
+            console.error("Error occurred", error);
+            res.status(500).json({ msg: "Error", error });
+        });
+};
 
+const cardpay = (req, res) => {
+    Order.findByIdAndUpdate(req.params.id, { paymentstatus: true }, { new: true }).exec()
+        .then(data => res.status(200).json({ message: "Status updated", data }))
+        .catch(error => {
+            console.error("Error occurred", error);
+            res.status(500).json({ message: "Error updating status", error });
+        });
+};
 
-                //if(x.deliverydate.getY)
-            })
-            // console.log(data)
-            res.json({
-                status: 200,
-                message: "Data fetched successfully",
-                data1: data1,
-                data2: data2
-            })
-        })
-        .catch(err => {
-            console.log(err)
-            res.json({
-                status: 500,
-                message: "Error fetching data"
-            })
-        })
-}
+const cancelOrder = (req, res) => {
+    Order.findByIdAndDelete(req.params.id).exec()
+        .then(() => res.status(200).json({ message: "Order cancelled successfully" }))
+        .catch(error => {
+            console.error("Error occurred", error);
+            res.status(500).json({ message: "Error cancelling order", error });
+        });
+};
 
-module.exports = { orderlist, ordpdt }
+const placeOrder = async (req, res) => {
+    try {
+        const { userid, products, paymenttype, shippingaddress, deliverydate, totalamount } = req.body;
+        const newOrder = new Order({
+            userid,
+            products,
+            paymenttype,
+            shippingaddress,
+            deliverydate,
+            totalamount,
+        });
+
+        const savedOrder = await newOrder.save();
+        res.status(200).json({ status: 200, data: savedOrder });
+    } catch (error) {
+        res.status(500).json({ status: 500, error: "Failed to place order" });
+    }
+
+};
+
+module.exports = { orderlist, ordpdt, orders, ord, cardpay, cancelOrder, placeOrder };

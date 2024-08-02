@@ -2,7 +2,7 @@ const express = require('express');
 const { adduser, login, viewcust, delcust } = require('./User/userController');
 const { addpdt, allpdt, dltpdt, editpdt, idfetch } = require('./Pdt/PdtController');
 const { cartlist, viewcart, removeFromCart } = require('./Cart/CartController');
-const { orderlist, ordpdt } = require('./Order/OrderController')
+const { orderlist, ordpdt, cardpay, orders, ord, cancelOrder, placeOrder } = require('./Order/OrderController')
 const router = express()
 
 //user 
@@ -26,6 +26,11 @@ router.delete('/removefromcart/:custid/:pdtid', removeFromCart);
 //order
 router.post('/orderlist/:id', orderlist)
 router.post('/ordpdt/:id', ordpdt)
+router.post('/cardpay/:id', cardpay)
+router.post('/orders', orders)
+router.post('/ord', ord)
+router.delete('/cancelOrder/:id', cancelOrder)
+router.post('/placeOrder', placeOrder)
 
 module.exports = router;
 

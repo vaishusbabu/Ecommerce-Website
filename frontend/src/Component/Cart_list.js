@@ -3,32 +3,34 @@ import React, { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+import Carousel from 'react-responsive-carousel/lib/js/components/Carousel/index';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import logo from '../Lush.png';
 
 function Cart_list() {
     const id = localStorage.getItem('userid');
-    console.log(id);
-
     const [ship, setShip] = useState(100);
     const [values, setValues] = useState([]);
+    const navigate = useNavigate();
+
     let current = new Date();
     let date = new Date();
     date.setDate(current.getDate() + 10);
 
     const [order, setOrders] = useState({
-        pdtid: id,
-        quantity: 1,
+        userid: id,
+        products: [],
         paymenttype: "",
         shippingaddress: "",
         deliverydate: date,
-        totalamount: 0, // Initially setting it to 0
+        totalamount: 0,
     });
 
-    // Function to handle item removal
     const removeFromCart = async (pdtid) => {
         try {
             await axios.delete(`http://localhost:4003/removeFromCart/${id}/${pdtid}`);
-            // Update the cart after removal
             setValues(values.filter(item => item.pdtid._id !== pdtid));
         } catch (error) {
             console.error("Error removing item from cart", error);
@@ -38,10 +40,12 @@ function Cart_list() {
     useEffect(() => {
         axios.post(`http://localhost:4003/viewcart/${id}`)
             .then((res) => {
-                console.log(res, "res");
                 if (res.data.data) {
-                    setValues(res.data.data);
-                    console.log("data", res.data.data);
+                    const updatedValues = res.data.data.map(item => ({
+                        ...item,
+                        quantity: item.quantity || 1,
+                    }));
+                    setValues(updatedValues);
                 }
             })
             .catch((e) => {
@@ -51,19 +55,42 @@ function Cart_list() {
 
     useEffect(() => {
         if (values.length > 0) {
-            const total = values.reduce((acc, item) => acc + item.pdtid.price * order.quantity, 0) + ship;
-            setOrders({ ...order, totalamount: total });
+            const total = values.reduce((acc, item) => acc + (item.quantity * item.pdtid.price), 0) + ship;
+            const products = values.map(item => ({
+                pdtid: item.pdtid._id,
+                quantity: item.quantity
+            }));
+            setOrders({ ...order, totalamount: total, products });
         }
-    }, [values, order.quantity, ship]);
+    }, [values, ship]);
+
+    const handleQuantityChange = (pdtid, newQuantity) => {
+        const product = values.find(item => item.pdtid._id === pdtid);
+        if (product) {
+            const quantity = parseInt(newQuantity, 10);
+            if (quantity > product.pdtid.quantity) {
+                alert("Quantity exceeds available stock");
+                return;
+            }
+
+            setValues(values.map(item =>
+                item.pdtid._id === pdtid ? { ...item, quantity } : item
+            ));
+        }
+    };
+
+    const handleBuyAll = () => {
+        navigate('/Order', { state: { order } });
+    };
 
     return (
         <div>
             <div className='smain'>
-                <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" className="img" alt="logo" />
+                <img src={logo} height="135" className="img" alt="logo" />
                 <div className='main1'>
                     <Navbar bg="dark" data-bs-theme="dark">
                         <Container>
-                            <Navbar.Brand href="#fashionstore">Fashion Store</Navbar.Brand>
+                            <Navbar.Brand href="#fashionstore">Lush Blooms</Navbar.Brand>
                             <div className="nav">
                                 <Nav className="me-auto">
                                     <Nav.Link href="#home"><Link className="btn btn-outline-light" aria-current="page" to='/CustHome'>Home</Link></Nav.Link>
@@ -79,46 +106,53 @@ function Cart_list() {
                 </div>
             </div>
             <div className='reg'>
-                <h1> Cart List</h1><hr />
+                <h1>Cart List</h1>
+                <hr />
                 {
                     Array.isArray(values) && values.length > 0 ? (
                         values.map((e, key) => {
-                            const imageName = e.pdtid.img.split('/').pop();
-                            const newImageUrl = `http://localhost:4003/${imageName}`;
+                            const imageUrls = e.pdtid.img;
                             return (
                                 <div key={key} className="card" style={{ width: "18rem", margin: "25px" }}>
                                     <div className="card-body">
-                                        <img src={newImageUrl} width={200} /><br /><br />
-                                        <label>Product Name :</label>
-                                        {e.pdtid.pdtname}<br />
-                                        <label> Quantity :</label>
-                                        <input type="number" name="quantity" value={order.quantity} onChange={(e) => {
-                                            setOrders({
-                                                ...order,
-                                                [e.target.name]: e.target.value,
-                                                totalamount: e.target.value * values.price + ship
-                                            })
-                                        }} />
-
-                                        <label>Price :</label>
-                                        {e.pdtid.price}<br />
-                                        <label>   Total amount :</label>
-                                        {order.quantity * e.pdtid.price}<br />
-                                        <button type="button"
-                                            className="btn btn-dark"
-                                            onClick={() => removeFromCart(e.pdtid._id)}>
-                                            Remove from cart
-                                        </button>
+                                        <Carousel autoPlay={true} showThumbs={false}>
+                                            {imageUrls.map((imgPath, idx) => {
+                                                const imageName = imgPath.split('/').pop();
+                                                const newImageUrl = `http://localhost:4003/${imageName}`;
+                                                return (
+                                                    <div key={idx}>
+                                                        <img src={newImageUrl} alt={e.pdtid.pdtname} style={{ margin: '10px', objectFit: 'contain', height: '300px', width: '250px' }} />
+                                                    </div>
+                                                );
+                                            })}
+                                        </Carousel>
+                                        <br /><br />
+                                        <label>Product Name :</label> {e.pdtid.pdtname}<br />
+                                        <label>Quantity :</label>
+                                        <input
+                                            type="number"
+                                            name="quantity"
+                                            value={e.quantity}
+                                            onChange={(event) => handleQuantityChange(e.pdtid._id, event.target.value)}
+                                            min="1"
+                                            max={e.pdtid.quantity}
+                                        />
+                                        <br />
+                                        <label>Price :</label> {e.pdtid.price}<br />
+                                        <label>Total amount :</label> {e.quantity * e.pdtid.price}<br />
+                                        <Button variant="dark" onClick={() => removeFromCart(e.pdtid._id)}>Remove from cart</Button>
+                                        <Link to={`/Order/${e._id}`}><Button variant='primary' className='Submit'>Buy Now</Button></Link>
                                         <hr />
                                     </div>
                                 </div>
-                            )
+                            );
                         })
                     ) : (
                         <p>No items in the cart</p>
                     )
                 }
-                <button type="Submit" className="btn btn-dark"><Link to='/Order'>Buy Now</Link></button>
+                <div>Total Amount: {order.totalamount}</div>
+                <Button variant='warning' className='Submit' onClick={handleBuyAll}>Buy All</Button>
             </div>
         </div>
     );

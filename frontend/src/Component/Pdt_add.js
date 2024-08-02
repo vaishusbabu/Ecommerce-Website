@@ -45,7 +45,9 @@ function Pdt_add() {
     formData.append('quantity', values.quantity);
     formData.append('price', values.price);
     values.img.forEach((image, index) => {
-      formData.append(`img_${index}`, image);
+      if (image) {
+        formData.append('img', image);
+      }
     });
 
     axios.post('http://localhost:4003/addpdt', formData, {
@@ -78,10 +80,10 @@ function Pdt_add() {
               <div className="nav">
                 <Nav className="me-auto">
                   <Nav.Link href="#products">
-                    <Link className="btn btn-outline-light" aria-current="page" to='/Pdt_add'>Add Product</Link>
+                    <Link className="btn btn-outline-light" aria-current="page" to='/Pdt_add'>Add </Link>
                   </Nav.Link>
                   <Nav.Link href="#customers">
-                    <Link className="btn btn-outline-light" aria-current="page" to='/View_pdt'>View Products</Link>
+                    <Link className="btn btn-outline-light" aria-current="page" to='/View_pdt'>View</Link>
                   </Nav.Link>
                   <Nav.Link href="#customers">
                     <Link className="btn btn-outline-light" aria-current="page" to='/ViewCust'>Customers</Link>
@@ -90,7 +92,7 @@ function Pdt_add() {
                     <Link className="btn btn-outline-light" aria-current="page" to='/CustOrder'>Orders</Link>
                   </Nav.Link>
                   <Nav.Link href="#logout">
-                    <Link className="btn btn-outline-light" aria-current="page" to='/Admin_login'>Logout</Link>
+                    <Link className="btn btn-outline-light" aria-current="page" to='/adminlogin'>Logout</Link>
                   </Nav.Link>
                 </Nav>
               </div>
@@ -102,7 +104,7 @@ function Pdt_add() {
       <div className='container' >
         <div className='row'>
           <div className='col-sm-12 col-md-6 col-lg-4'>
-            <img src='https://images.pexels.com/photos/4277099/pexels-photo-4277099.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' style={{ marginLeft: '1', width: '100%' }}></img>
+            <img src='https://images.pexels.com/photos/4277099/pexels-photo-4277099.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' style={{ marginLeft: '1', width: '100%' }} alt="product"></img>
           </div>
           <div className='col-sm-12 col-md-6 col-lg-8' >
 
