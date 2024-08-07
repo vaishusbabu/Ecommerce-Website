@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import Button from "react-bootstrap/Button";
-
+import logo from "../Lush.png";
 function Edit() {
 
     const { id } = useParams(); //hook-- to took the id
@@ -42,7 +42,7 @@ function Edit() {
     return (
         <div>
             <div className='smain'>
-                <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" className="img" alt="logo" />
+                <img src={logo} height="135" className="img" alt="logo" />
 
                 <div className="main1">
                     <Navbar bg="dark" data-bs-theme="dark">

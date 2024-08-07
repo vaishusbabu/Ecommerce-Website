@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
+import logo from "../Lush.png";
 
 function Pdt_add() {
   const navigate = useNavigate();
@@ -71,12 +72,13 @@ function Pdt_add() {
   return (
     <div>
       <div className='smain'>
-        <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" className="img" alt="logo" />
+        <img src={logo}
+          height="135" className="img" alt="logo" />
 
         <div className='main1'>
           <Navbar bg="dark" data-bs-theme="dark">
             <Container>
-              <Navbar.Brand href="#home">Welcome Super Admin...</Navbar.Brand>
+              <Navbar.Brand href="#home">Lush Blooms</Navbar.Brand>
               <div className="nav">
                 <Nav className="me-auto">
                   <Nav.Link href="#products">

@@ -31,7 +31,7 @@ function Cart_list() {
     const removeFromCart = async (pdtid) => {
         try {
             await axios.delete(`http://localhost:4003/removeFromCart/${id}/${pdtid}`);
-            setValues(values.filter(item => item.pdtid._id !== pdtid));
+            setValues(values.filter(item => item.pdtid && item.pdtid._id !== pdtid));
         } catch (error) {
             console.error("Error removing item from cart", error);
         }
@@ -55,17 +55,21 @@ function Cart_list() {
 
     useEffect(() => {
         if (values.length > 0) {
-            const total = values.reduce((acc, item) => acc + (item.quantity * item.pdtid.price), 0) + ship;
-            const products = values.map(item => ({
+            const total = values.reduce((acc, item) => {
+                if (item.pdtid) {
+                    return acc + (item.quantity * item.pdtid.price);
+                }
+                return acc;
+            }, 0) + ship;
+            const products = values.filter(item => item.pdtid).map(item => ({
                 pdtid: item.pdtid._id,
                 quantity: item.quantity
             }));
             setOrders({ ...order, totalamount: total, products });
         }
     }, [values, ship]);
-
     const handleQuantityChange = (pdtid, newQuantity) => {
-        const product = values.find(item => item.pdtid._id === pdtid);
+        const product = values.find(item => item.pdtid && item.pdtid._id === pdtid);
         if (product) {
             const quantity = parseInt(newQuantity, 10);
             if (quantity > product.pdtid.quantity) {
@@ -76,11 +80,13 @@ function Cart_list() {
             setValues(values.map(item =>
                 item.pdtid._id === pdtid ? { ...item, quantity } : item
             ));
+        } else {
+            console.error("Product not found:", pdtid);
         }
     };
 
     const handleBuyAll = () => {
-        navigate('/Order', { state: { order } });
+        navigate('/buyall', { state: { products: values, ship, deliverydate: order.deliverydate } });
     };
 
     return (
@@ -111,29 +117,39 @@ function Cart_list() {
                 {
                     Array.isArray(values) && values.length > 0 ? (
                         values.map((e, key) => {
-                            const imageUrls = e.pdtid.img;
+                            if (!e.pdtid) {
+                                return null;
+                            }
+
+                            const imageUrls = e.pdtid.img ? e.pdtid.img : [];
                             return (
                                 <div key={key} className="card" style={{ width: "18rem", margin: "25px" }}>
                                     <div className="card-body">
-                                        <Carousel autoPlay={true} showThumbs={false}>
-                                            {imageUrls.map((imgPath, idx) => {
-                                                const imageName = imgPath.split('/').pop();
-                                                const newImageUrl = `http://localhost:4003/${imageName}`;
-                                                return (
-                                                    <div key={idx}>
-                                                        <img src={newImageUrl} alt={e.pdtid.pdtname} style={{ margin: '10px', objectFit: 'contain', height: '300px', width: '250px' }} />
-                                                    </div>
-                                                );
-                                            })}
-                                        </Carousel>
+                                        {imageUrls?.length > 0 ? (
+                                            <Carousel
+                                                autoPlay={true} showThumbs={false}>
+                                                {imageUrls.map((imgPath, idx) => {
+                                                    const imageName = imgPath.split('/').pop();
+                                                    const newImageUrl = `http://localhost:4003/${imageName}`;
+                                                    return (
+                                                        <div key={idx}>
+                                                            <img src={newImageUrl} alt={e.pdtid.pdtname} style={{ margin: '10px', objectFit: 'contain', height: '300px', width: '250px' }} />
+                                                        </div>
+                                                    );
+                                                })}
+                                            </Carousel>
+                                        ) : (
+                                            <p>No images available</p>
+                                        )}
                                         <br /><br />
                                         <label>Product Name :</label> {e.pdtid.pdtname}<br />
                                         <label>Quantity :</label>
+
                                         <input
                                             type="number"
                                             name="quantity"
                                             value={e.quantity}
-                                            onChange={(event) => handleQuantityChange(e.pdtid._id, event.target.value)}
+                                            onChange={(e) => handleQuantityChange(e.pdtid._id, e.target.value)}
                                             min="1"
                                             max={e.pdtid.quantity}
                                         />
@@ -141,7 +157,7 @@ function Cart_list() {
                                         <label>Price :</label> {e.pdtid.price}<br />
                                         <label>Total amount :</label> {e.quantity * e.pdtid.price}<br />
                                         <Button variant="dark" onClick={() => removeFromCart(e.pdtid._id)}>Remove from cart</Button>
-                                        <Link to={`/Order/${e._id}`}><Button variant='primary' className='Submit'>Buy Now</Button></Link>
+                                        <Link to={`/Order/${e.pdtid._id}`}><Button variant='warning' className='Submit'>Buy Now</Button></Link>
                                         <hr />
                                     </div>
                                 </div>
@@ -151,6 +167,7 @@ function Cart_list() {
                         <p>No items in the cart</p>
                     )
                 }
+
                 <div>Total Amount: {order.totalamount}</div>
                 <Button variant='warning' className='Submit' onClick={handleBuyAll}>Buy All</Button>
             </div>

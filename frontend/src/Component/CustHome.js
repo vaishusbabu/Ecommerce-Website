@@ -4,12 +4,13 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { Carousel } from 'react-responsive-carousel';
 import { Link } from 'react-router-dom';
-
+import logo from "../Lush.png";
 function CustHome() {
     return (
         <div>
             <div className='smain'>
-                <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" class="img" ></img>
+                <img src={logo}
+                    height="135" class="img" ></img>
                 <div className='main1'>
                     <Navbar bg="dark" data-bs-theme="dark">
                         <Container>

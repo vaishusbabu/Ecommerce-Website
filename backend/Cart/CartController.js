@@ -1,79 +1,66 @@
-const Cart = require('./CartSchema')
+const Cart = require('./CartSchema');
 
 const cartlist = async (req, res) => {
+    try {
+        const { id: custid } = req.params;
+        const { pdtid } = req.body;
 
-    let date = new Date();
-    let flag = 0;
-    await Cart
-        .find({ custid: req.params.id, pdtid: req.body.pdtid })
-        .exec()
-        .then((data) => {
-            if (data.length > 0) {
-                flag = 1;
-            }
-        });
-    if (flag == 0) {
-        newcart = new Cart({
-            custid: req.params.id,
-            pdtid: req.body.pdtid,
-            date: date
-        });
-        await newcart
+        const existingItem = await Cart.findOne({ custid, pdtid });
 
-        newcart.save()
-            .then(data => {
-                console.log("Added to Cart")
-                res.json({
-                    status: 200,
-                    msg: "saved to cart",
-                    data: data
-                })
-            })
-            .catch(error => {
-                console.log("Error Occured", error)
-                res.json({
-                    status: 500,
-                    msg: "Error",
-                    data: error
-                })
-            })
-    }
-    else {
+        if (existingItem) {
+            return res.json({
+                status: 400,
+                msg: "Item already in cart"
+            });
+        }
+
+        const newcart = new Cart({
+            custid,
+            pdtid,
+            date: new Date()
+        });
+
+        const savedCart = await newcart.save();
+
         res.json({
-            status: 500,
-            msg: "Already in saved list"
-        })
-    }
-}
-
-const viewcart = (req, res) => {
-    Cart.find({ custid: req.params.id })
-        .populate("pdtid")
-        .exec()
-        .then(data => {
-            console.log("Viewed");
-            res.json({
-                status: 200,
-                msg: "saved to cart",
-                data: data
-            });
-        })
-        .catch(error => {
-            console.log("Error Occurred", error);
-            res.json({
-                status: 500,
-                msg: "Error",
-                data: error
-            });
+            status: 200,
+            msg: "Added to cart",
+            data: savedCart
         });
+    } catch (error) {
+        console.error("Error adding to cart", error);
+        res.status(500).json({
+            status: 500,
+            msg: "Error adding to cart",
+            data: error.message
+        });
+    }
+};
+
+const viewcart = async (req, res) => {
+    try {
+        const { id: custid } = req.params;
+        const cartItems = await Cart.find({ custid }).populate("pdtid");
+
+        res.json({
+            status: 200,
+            msg: "Cart retrieved successfully",
+            data: cartItems
+        });
+    } catch (error) {
+        console.error("Error retrieving cart", error);
+        res.status(500).json({
+            status: 500,
+            msg: "Error retrieving cart",
+            data: error.message
+        });
+    }
 };
 
 const removeFromCart = async (req, res) => {
     try {
         const { custid, pdtid } = req.params;
-
-
-        const result = await Cart.deleteOne({ custid: custid, pdtid: pdtid });
+        const result = await Cart.deleteOne({ custid, pdtid });
 
         if (result.deletedCount > 0) {
             res.json({
@@ -81,19 +68,19 @@ const removeFromCart = async (req, res) => {
                 msg: "Item removed from cart"
             });
         } else {
-            res.json({
+            res.status(404).json({
                 status: 404,
                 msg: "Item not found in cart"
             });
         }
     } catch (error) {
         console.error("Error removing item from cart", error);
-        res.json({
+        res.status(500).json({
             status: 500,
-            msg: "Error",
-            data: error
+            msg: "Error removing item from cart",
+            data: error.message
         });
     }
 };
 
-module.exports = { cartlist, viewcart, removeFromCart }
+module.exports = { cartlist, viewcart, removeFromCart };

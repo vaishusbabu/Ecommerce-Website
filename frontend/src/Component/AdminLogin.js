@@ -13,6 +13,7 @@ function AdminLogin() {
         email: "",
         password: ""
     });
+    const [error, setError] = useState({})
     const Change = (e) => {
         setValues({
             ...values, [e.target.name]: e.target.value
@@ -26,6 +27,7 @@ function AdminLogin() {
             Navigate("/adminHome")
         }
         else {
+
             alert("Invalid Login")
         }
     }
@@ -37,7 +39,7 @@ function AdminLogin() {
             <div className='main1'>
                 <Navbar bg="dark" data-bs-theme="dark">
                     <Container>
-                        <Navbar.Brand href="#fashionstore">Fashion Store</Navbar.Brand>
+                        <Navbar.Brand href="#fashionstore">Lush Blooms</Navbar.Brand>
                         <div class="nav">
                             <Nav className="me-auto">
                                 <Nav.Link href="#home"><Link class="btn btn-outline-light" aria-current="page" >Home</Link></Nav.Link>

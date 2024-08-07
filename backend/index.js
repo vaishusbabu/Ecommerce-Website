@@ -3,6 +3,8 @@ const cors = require('cors')
 const router = require("./routes")
 const app = express()
 const path = require('path');
+const Stripe = require('stripe');
+
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())

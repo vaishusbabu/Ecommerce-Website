@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from 'react-responsive-carousel';
-
+import logo from "../Lush.png";
 function View_pdt() {
   const [values, setValues] = useState([]);
 
@@ -40,18 +40,19 @@ function View_pdt() {
   return (
     <div>
       <div className='smain'>
-        <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" className="img" alt="logo" />
+        <img src={logo}
+          height="135" className="img" alt="logo" />
         <div className='main1'>
           <Navbar bg="dark" data-bs-theme="dark">
             <Container>
-              <Navbar.Brand href="#home">Welcome Super Admin...</Navbar.Brand>
+              <Navbar.Brand href="#home">Lush Blooms</Navbar.Brand>
               <div className="nav">
                 <Nav className="me-auto">
                   <Nav.Link href="#products"><Link className="btn btn-outline-light" aria-current="page" to='/Pdt_add'>Add Pdt</Link></Nav.Link>
                   <Nav.Link href="#customers"><Link className="btn btn-outline-light" aria-current="page" to='/View_pdt'>View Pdt</Link></Nav.Link>
                   <Nav.Link href="#customers"><Link className="btn btn-outline-light" aria-current="page" to='/ViewCust'>Customers</Link></Nav.Link>
                   <Nav.Link href="#logout"><Link className="btn btn-outline-light" aria-current="page" to='/CustOrder' >Orders</Link></Nav.Link>
-                  <Nav.Link href="#logout"><Link className="btn btn-outline-light" aria-current="page" to='/Admin_login'>Logout</Link></Nav.Link>
+                  <Nav.Link href="#logout"><Link className="btn btn-outline-light" aria-current="page" to='/adminlogin'>Logout</Link></Nav.Link>
                 </Nav>
               </div>
             </Container>

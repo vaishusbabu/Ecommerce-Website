@@ -1,3 +1,4 @@
+const { Console } = require('console');
 const Product = require('./PdtSchema');
 const multer = require('multer');
 const path = require('path');
@@ -48,7 +49,6 @@ const addpdt = (req, res) => {
             });
     });
 };
-
 const allpdt = (req, res) => {
     Product.find({
 
@@ -127,6 +127,7 @@ const editpdt = (req, res) => {
         })
 }
 const idfetch = (req, res) => {
+
     Product.findById({
         _id: req.params.id
     })

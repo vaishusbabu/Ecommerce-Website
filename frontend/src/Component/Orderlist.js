@@ -5,6 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
+import logo from "../Lush.png";
 
 function Orderlist() {
   const id = localStorage.getItem('userid');
@@ -14,7 +15,6 @@ function Orderlist() {
   useEffect(() => {
     axios.post(`http://localhost:4003/ordpdt/${id}`)
       .then(res => {
-        console.log(res, "res");
         if (res.data) {
           setData1(res.data.data1);
           setData2(res.data.data2);
@@ -34,7 +34,8 @@ function Orderlist() {
   return (
     <div>
       <div className='smain'>
-        <img src="https://ar.happyvalentinesday2020.online/pics/thumbs.dreamstime.com/b/logo-store-fashion-hanger-vector-design-clothes-clothing-shop-icon-symbol-online-illustration-background-white-style-sale-isolated-148064914.jpg" height="135" className="img" alt="Store Logo"></img>
+        <img src={logo}
+          height="135" className="img" alt="Store Logo"></img>
         <div className='main1'>
           <Navbar bg="dark">
             <Container>

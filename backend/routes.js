@@ -3,6 +3,8 @@ const { adduser, login, viewcust, delcust } = require('./User/userController');
 const { addpdt, allpdt, dltpdt, editpdt, idfetch } = require('./Pdt/PdtController');
 const { cartlist, viewcart, removeFromCart } = require('./Cart/CartController');
 const { orderlist, ordpdt, cardpay, orders, ord, cancelOrder, placeOrder } = require('./Order/OrderController')
+const { } = require('./Payment/PaymentController')
+const { createPaymentIntent } = require('./Payment/PaymentController')
 const router = express()
 
 //user 
@@ -31,6 +33,11 @@ router.post('/orders', orders)
 router.post('/ord', ord)
 router.delete('/cancelOrder/:id', cancelOrder)
 router.post('/placeOrder', placeOrder)
+
+//payment
+
+router.post('/create-payment-intent', createPaymentIntent);
+router.post('/cardpay/:id', cardpay);
 
 module.exports = router;
 

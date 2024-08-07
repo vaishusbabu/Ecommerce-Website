@@ -94,6 +94,8 @@ function Cust_all_pdt() {
                                             </Carousel>
                                         </div>
                                         <Button variant="info" type='button' className='Submit' onClick={() => Cart(e._id)}>Add to Cart</Button>
+
+                                        {console.log("id", id)}
                                         <Link to={`/Order/${e._id}`}><Button variant='warning' className='Submit'>Buy Now</Button></Link>
                                         <hr />
                                     </div>

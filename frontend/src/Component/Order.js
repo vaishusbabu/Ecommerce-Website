@@ -1,26 +1,131 @@
-import React from 'react';
-import { useLocation, useParams } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import { Link } from 'react-router-dom';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import Form from "react-bootstrap/Form";
 import logo from '../Lush.png';
+import styles from '../assets/Order.module.css';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 
-function Order() {
-  const { id } = useParams();
-  const location = useLocation();
-  const { order } = location.state || { order: {} };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle order submission here
+const stripePromise = loadStripe('pk_test_51PkJjT07k5vAkIOryvrtGFNcxuPeN3bqavsAPaJFvNbABy7PAvXJNDDmo9OOEOgAkfU66MBAPFmbrpcMPGaOJAUh00WKQNUnff');
+
+function CheckoutForm({ order }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const Navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements.getElement(CardElement),
+    });
+
+    if (error) {
+      console.log('[error]', error);
+    } else {
+      const response = await axios.post('http://localhost:4003/create-payment-intent', {
+        amount: order.totalamount * 100,
+        payment_method_id: paymentMethod.id,
+        order_id: order._id,
+      });
+
+      const { clientSecret } = response.data;
+
+      const result = await stripe.confirmCardPayment(clientSecret);
+
+      if (result.error) {
+        console.log(result.error.message);
+      } else {
+        if (result.paymentIntent.status === 'succeeded') {
+          // Payment successful, update order status
+          await axios.post(`http://localhost:4003/cardpay/${order._id}`);
+          Navigate('/payment-success');
+        }
+      }
+    }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    order[name] = value;
+  return (
+    <form onSubmit={handleSubmit}>
+      <CardElement />
+      <button type="submit" disabled={!stripe}>
+        Pay
+      </button>
+    </form>
+  );
+}
+
+function Order() {
+  const Navigate = useNavigate();
+  const { id } = useParams();
+  const _id = localStorage.getItem("userid");
+
+  const [values, setValues] = useState({ img: "", pdtname: "", price: 0, quantity: 0 });
+
+  const [ship, setShip] = useState(100);
+  const [order, setOrders] = useState({
+    pdtid: id,
+    quantity: 1,
+    paymenttype: "",
+    shippingaddress: "",
+    deliverydate: new Date(new Date().setDate(new Date().getDate() + 10)),
+    totalamount: 0,
+  });
+
+  useEffect(() => {
+    axios.post(`http://localhost:4003/idfetch/${id}`)
+      .then(res => {
+        if (res.data.data) {
+          setValues(res.data.data);
+          setOrders(order => ({
+            ...order,
+            totalamount: res.data.data.price + ship
+          }));
+        }
+      })
+      .catch(console.log);
+  }, [id, ship]);
+
+  useEffect(() => {
+    setOrders(order => ({
+      ...order,
+      totalamount: order.quantity * values.price + ship
+    }));
+  }, [order.quantity, values.price, ship]);
+
+  const Change = (e) => {
+    setOrders({
+      ...order,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const Submit = async (e) => {
+    e.preventDefault();
+    if (order.quantity > values.quantity) {
+      alert("Quantity exceeds available stock");
+      return;
+    }
+    try {
+      const response = await axios.post(`http://localhost:4003/orderlist/${_id}`, order);
+      if (response.status === 200) {
+        const paymentRoute = response.data.data.paymenttype === 'card' ? '/success' : '/Cash_cod';
+        Navigate(paymentRoute);
+      }
+    } catch (error) {
+      alert("Error placing order");
+      console.log(error);
+    }
   };
 
   return (
@@ -45,53 +150,76 @@ function Order() {
           <br />
         </div>
       </div>
-      <div className='reg'>
-        <h1>Order</h1>
-        <hr />
-        {order.products && order.products.length > 0 ? (
-          order.products.map((product, index) => (
-            <div key={index}>
-              <p>Product ID: {product.pdtid}</p>
-              <p>Quantity: {product.quantity}</p>
-              <hr />
-            </div>
-          ))
-        ) : (
-          <p>No products in the order</p>
-        )}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formPaymentType">
-            <Form.Label>Payment Type</Form.Label>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Order Details</h1>
+        <Form onSubmit={Submit}>
+          <div className={styles.productInfo}>
+            <h3 className={styles.productName}>{values.pdtname}</h3>
+            <h4 className={styles.price}>Price: ${values.price}</h4>
+            <label>
+              Quantity:
+              <input
+                type="number"
+                name="quantity"
+                min={1}
+                max={values.quantity}
+                value={order.quantity}
+                onChange={(e) => setOrders({ ...order, [e.target.name]: e.target.value, totalamount: e.target.value * values.price + ship })}
+                className={styles.quantityInput}
+              />
+            </label>
+            <h4 className={styles.totalAmount}>Total amount: ${order.totalamount}</h4>
+            <h4 className={styles.shippingCharge}>Shipping Charge: ${ship}</h4>
+          </div>
+
+          <div className={styles.formGroup}>
+            <Form.Label className={styles.formLabel}>Shipping Address:</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Enter payment type"
-              name="paymenttype"
-              onChange={handleChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="formShippingAddress">
-            <Form.Label>Shipping Address</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Enter shipping address"
+              as="textarea"
+              placeholder="Shipping Address"
+              onChange={Change}
               name="shippingaddress"
-              onChange={handleChange}
+              rows={3}
+              className={styles.formControl}
             />
-          </Form.Group>
-          <Form.Group controlId="formTotalAmount">
-            <Form.Label>Total Amount</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Total amount"
-              name="totalamount"
-              value={order.totalamount}
-              readOnly
-            />
-          </Form.Group>
-          <Button variant="primary" type="submit">
-            Place Order
-          </Button>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Estimate Delivery: {order.deliverydate.toString().slice(0, 10)}</label>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Payment Mode:</label>
+            <div className={styles.radioGroup}>
+              <Form.Check
+                inline
+                label="Credit Card / Debit Card"
+                name="paymenttype"
+                type="radio"
+                onChange={Change}
+                value="card"
+              />
+              <Form.Check
+                inline
+                label="Cash on Delivery"
+                name="paymenttype"
+                type="radio"
+                onChange={Change}
+                value="cod"
+              />
+            </div>
+          </div>
+
+          <button type="submit" className={styles.submitButton}>Confirm Order</button>
         </Form>
+        <div>
+
+          {order.paymenttype === 'card' && (
+            <Elements stripe={stripePromise}>
+              <CheckoutForm order={order} />
+            </Elements>
+          )}
+        </div>
       </div>
     </div>
   );
